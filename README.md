@@ -56,6 +56,7 @@ Claimed 10,000, upheld 1,000, verified 9,000. A second project with an unretriev
 
 ## Verification
 
-- Deployed contract: (fill in after deploy)
-- Studio verification: (fill in after deploy — expected 28 transactions: 17 SUCCESS, 11 intentional ERRORs)
+- Deployed contract: 0xa726dD7561504C142355434601333c49D8643e8F ([explorer](https://explorer-studio.genlayer.com/address/0xa726dD7561504C142355434601333c49D8643e8F)), deployed 2026-11-16 on GenLayer Studio.
+- Studio verification 2026-11-16: 28 transactions — 17 SUCCESS, 11 intentional ERRORs (deploy 1 + 16 successful calls + 11 negative tests), every step matching `test_flow.md`.
+- Challenge 0 valid/critical: 1,000 credits double-counted (serials 9001–10000 under both CM-2024-118 and CM-2023-077), verified 10,000 → 9,000. Challenges 1–5 invalid: additionality article about a different site, vintage valid through 2030, repeat of the accepted finding (duplicate), repeat of the rejected claim (own grounding), dead registry. Severity invariant holds on all six. 11 negative tests pass.
 - Known boundary (same class as earlier contracts, not fixed): reading a nonexistent project or challenge fails with a raw `KeyError` (TreeMap lookup) instead of a friendly message — still rejected, not a valid read.
