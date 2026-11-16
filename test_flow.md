@@ -1,7 +1,7 @@
 # CarbonCreditAudit — test flow
 
 Two Studio test accounts: A = project owner (deployer), B = challenger.
-Deployed contract address: (fill in after deploy)
+Deployed contract address: 0xa726dD7561504C142355434601333c49D8643e8F
 
 Fixture files must be live on the repo's main branch BEFORE running the assessment steps (validators fetch them at assessment time):
 - registry: https://raw.githubusercontent.com/wallechj/genlayer-carbon-credit-audit/main/examples/registry.md
