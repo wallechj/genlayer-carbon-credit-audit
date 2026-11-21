@@ -112,7 +112,7 @@ project.
 
 ## Live product
 
-- Site: https://genlayer-carbon-credit-frontend.vercel.app/ (currently reads the v1 contract; switching to the v2 address after this review round)
+- Site: https://genlayer-carbon-credit-frontend.vercel.app/ (reads the v2 contract since 2026-11-21 15:36)
 - Frontend repo: https://github.com/wallechj/genlayer-carbon-credit-frontend
 - The site reads the projects and challenges live from the contract
   (no wallet needed); wallet writes (create project, submit challenge,
