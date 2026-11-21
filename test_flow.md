@@ -1,7 +1,7 @@
 # CarbonCreditAudit — test flow (v2, steward review 2026-11-21)
 
 Two Studio test accounts: A = project owner (deployer), B = challenger.
-Deployed contract address: TBD (v2 redeploy; v1 was 0xa726dD7561504C142355434601333c49D8643e8F)
+Deployed contract address: 0x44C6fE01e66B38157a2C5f970dA2220e9da5aD95 (v2 redeploy 2026-11-21; v1 was 0xa726dD7561504C142355434601333c49D8643e8F)
 
 What changed in v2 (steward Joaquin, 2026-11-20):
 1. Bounded deduction: validators independently determine the evidence-supported
@@ -125,6 +125,8 @@ Call assess_challenge(7). Expected: invalid as a duplicate — the deterministic
 
 Negative test: assess_challenge(0) again → "challenge has already been assessed".
 
+Negative test: as B, call close_project(0) → "only the project owner can do this".
+
 As A, call close_project(0). Expected: null; get_project(0).status = "closed".
 
 Negative test: as B, submit_challenge(0, ...) on the closed project → "project is not open for challenges".
@@ -147,4 +149,4 @@ As A, call reopen_project(0). Expected: null; get_project(0).status = "open".
 
 ## Expected transaction count
 
-Deploy (1) + successful calls (create 0, submit 0–2, assess 0–2, submit 3–4, assess 3–4, create 1, submit 5, assess 5, create 2, submit 6, assess 6, submit 7, assess 7, close, reopen = 21) + negative tests (11) = 33 transactions: 22 SUCCESS, 11 intentional ERRORs.
+Deploy (1) + successful calls (create 0, submit 0–2, assess 0–2, submit 3–4, assess 3–4, create 1, submit 5, assess 5, create 2, submit 6, assess 6, submit 7, assess 7, close, reopen = 21) + negative tests (12) = 34 transactions: 22 SUCCESS, 12 intentional ERRORs.

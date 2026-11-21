@@ -14,7 +14,9 @@ A carbon credit is only worth something if the tonne it represents is real, coun
    - **valid** only if the fetched registry or monitoring report corroborates the problem — the named credits are double-counted, lack monitoring data, fail additionality, or fall outside the stated vintage or methodology. A challenge is never valid on the challenger's word alone, and never valid on the challenger's evidence page alone: the registry or the report must corroborate it. If the registry could not be retrieved, the challenge is invalid.
    - **invalid** otherwise — including a challenge that matches a rejected prior challenge (judged on its own grounding) or a challenge that repeats an accepted finding (a duplicate).
    - `valid` must be a true JSON boolean; a valid challenge always carries a real severity bucket (critical/high/medium/low), an invalid one always carries "none".
-   - The verified count is then updated deterministically on-chain: `verified = claimed − sum(upheld challenges)`, floored at zero. No LLM ever touches the credit math.
+   - Validators also determine the evidence-supported number of affected credits (`verified_credits` in the verdict): the exact count the fetched registry or report supports — for example, the size of the overlapping serial range actually listed. It must be a positive integer no larger than the challenger's claimed number, or the verdict is malformed and the challenge is rejected. The deduction uses only that bounded number, capped at the remaining verified credits, and the number is stored on-chain as `verified_credits_affected`. The challenger's claimed number is never deducted on trust.
+   - The verified count is then updated deterministically on-chain: `verified = claimed − sum(upheld verified deductions)`, floored at zero. No LLM ever touches the credit math.
+   - Duplicate protection covers every prior accepted finding: the full history (no truncation) is shown to the validators, and an exact replay — same title and same evidence as an accepted finding — is rejected on-chain without a validator call.
 4. **close_project / reopen_project** — the owner closes or reopens the project (no challenges or assessments while closed).
 
 Every verdict carries a one-sentence evidence note stored on-chain, naming the fetched material that decided it.
@@ -41,6 +43,8 @@ Every verdict carries a one-sentence evidence note stored on-chain, naming the f
 
 Claimed 10,000, upheld 1,000, verified 9,000. A second project with an unretrievable registry entry cannot be verified and is not silently docked.
 
+A third project proves the v2 bound: Kelp Forest Restoration claims 2,000 credits, and a challenge claims 1,000 double-counted — but the registry shows an overlap of only 400 serials (1601–2000). The validators determine 400, so verified is 2,000 → 1,600, not 1,000. A reworded replay of the oldest accepted finding is still caught as a duplicate, proving the full history is checked.
+
 ## Files
 
 - `contracts/carbon_credit_audit.py` — the contract
@@ -56,7 +60,9 @@ Claimed 10,000, upheld 1,000, verified 9,000. A second project with an unretriev
 
 ## Verification
 
-- Deployed contract: 0xa726dD7561504C142355434601333c49D8643e8F ([explorer](https://explorer-studio.genlayer.com/address/0xa726dD7561504C142355434601333c49D8643e8F)), deployed 2026-11-16 on GenLayer Studio.
-- Studio verification 2026-11-16: 28 transactions — 17 SUCCESS, 11 intentional ERRORs (deploy 1 + 16 successful calls + 11 negative tests), every step matching `test_flow.md`.
-- Challenge 0 valid/critical: 1,000 credits double-counted (serials 9001–10000 under both CM-2024-118 and CM-2023-077), verified 10,000 → 9,000. Challenges 1–5 invalid: additionality article about a different site, vintage valid through 2030, repeat of the accepted finding (duplicate), repeat of the rejected claim (own grounding), dead registry. Severity invariant holds on all six. 11 negative tests pass.
+- Deployed contract (v2): 0x44C6fE01e66B38157a2C5f970dA2220e9da5aD95 ([explorer](https://explorer-studio.genlayer.com/address/0x44C6fE01e66B38157a2C5f970dA2220e9da5aD95)), deployed 2026-11-21 on GenLayer Studio (chain 61999).
+- Studio verification 2026-11-21: 34 transactions — 22 SUCCESS, 12 intentional ERRORs (deploy 1 + 21 successful calls + 12 negative tests), every step matching `test_flow.md`.
+- v2 changes (steward review 2026-11-20): the deduction uses the validator-determined evidence-supported number only (challenge 6 proves it: 1,000 claimed, 400 supported, 400 deducted, verified 2,000 → 1,600); duplicate protection covers every prior accepted finding with no truncated history, plus a deterministic exact-replay guard (challenge 3: "duplicate of accepted finding #0"; challenge 7: reworded replay of the oldest finding still caught).
+- Challenge 0 valid/critical: 1,000 credits double-counted (serials 9001–10000 under both CM-2024-118 and CM-2023-077), verified 10,000 → 9,000. Challenges 1–5 invalid: additionality article about a different site, vintage valid through 2030, repeat of the accepted finding (duplicate), repeat of the rejected claim (own grounding), dead registry. Severity invariant holds on all eight. 12 negative tests pass.
+- v1 contract remains live at 0xa726dD7561504C142355434601333c49D8643e8F ([explorer](https://explorer-studio.genlayer.com/address/0xa726dD7561504C142355434601333c49D8643e8F)), deployed 2026-11-16, 28 transactions (17 SUCCESS / 11 ERRORs).
 - Known boundary (same class as earlier contracts, not fixed): reading a nonexistent project or challenge fails with a raw `KeyError` (TreeMap lookup) instead of a friendly message — still rejected, not a valid read.
